@@ -42,7 +42,8 @@ function part2(d)
             collect
             first(_), last(_)
             map(x -> lookup[x.match], _)
-            string(string.(_))
+            map(string, _)
+            string(_...)
             parse(Int, _)
         end
     end
