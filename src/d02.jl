@@ -38,7 +38,7 @@ end
 function parseinput(io)
     map(eachline(io)) do l
         @chain l begin
-            chopprefix(r"Game [0-9]+: ", _)
+            chopprefix(_, r"Game [0-9]+: ")
             split("; ")
             map(x -> split(x, ", "), _)
             map(mapgame, _)
