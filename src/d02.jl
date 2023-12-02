@@ -21,18 +21,19 @@ function part2(d)
 end
 
 function mapgame(x)
-    return reduce((a, b) -> a .+ b, map(mapentry, x))
+    return mapreduce(mapentry, (a, b) -> a .+ b, x)
 end
 
 function mapentry(x)
     r = match(r"([0-9]+) ([a-z]+)", x)
-    if r.captures[2] == "red"
-        return (parse(Int, r.captures[1]), 0, 0)
-    elseif r.captures[2] == "green"
-        return (0, parse(Int, r.captures[1]), 0)
-    elseif r.captures[2] == "blue"
-        return (0, 0, parse(Int, r.captures[1]))
-    end
+    lookup = Dict(
+        "red" => 1,
+        "green" => 2,
+        "blue" => 3
+    )
+    ret = [0, 0, 0]
+    ret[lookup[r.captures[2]]] = parse(Int, r.captures[1])
+    return tuple(ret...)
 end
 
 function parseinput(io)
