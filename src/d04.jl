@@ -16,7 +16,7 @@ function part1(d)
     end
 end
 
-function part2(d)
+function part2Version1(d)
     nWins = map(d) do card
         winning, have = card
         return length(intersect(winning, have))
@@ -34,6 +34,18 @@ function part2(d)
         end
     end
     return count
+end
+
+# Each card only adds additional cards. This method starts at the end and works backwards to figure
+# out how many total cards each card will produce by summing the cumulative sum of each of the nWin
+# following cards.
+function part2(d)
+    cumulative = zeros(Int, size(d))
+    for i in reverse(eachindex(cumulative))
+        nWins = length(intersect(d[i]...))
+        cumulative[i] = 1 + sum(cumulative[i+1:i+nWins])
+    end
+    return sum(cumulative)
 end
 
 function parseinput(io)
