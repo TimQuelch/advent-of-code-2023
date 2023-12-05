@@ -34,3 +34,7 @@ using AdventOfCode2023
 AdventOfCode2023.runtests() # All tests
 AdventOfCode2023.d01.runtests() # Day 1 tests
 ```
+
+## Data
+
+Plain-text input files are not included as they are not licensed for distribution. The data files encrypted with `transcrypt` are included for my convenience. Replace these files with your plain-text inputs to test.
