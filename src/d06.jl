@@ -3,7 +3,7 @@ module d06
 using Chain
 using InlineTest
 
-function race(time, dist)
+function raceVersion1(time, dist)
     count = 0
     for i in 0:time
         final = i * (time - i)
@@ -12,6 +12,15 @@ function race(time, dist)
         end
     end
     return count
+end
+
+# Find number of integers between the solutions of 0 = D - t * (t - T)
+# Because the bounds are open so we need to force floor and ceil to
+# round on integers with next/prevfloat
+function race(time, dist)
+    t1 = (time - sqrt(time^2 - 4 * dist)) / 2
+    t2 = (time + sqrt(time^2 - 4 * dist)) / 2
+    return Int(floor(prevfloat(t2)) - ceil(nextfloat(t1)) + 1)
 end
 
 function part1(d)
@@ -48,6 +57,9 @@ const testarr = ([7, 15, 30], [9, 40, 200])
     @test parseinput(IOBuffer(teststr)) == testarr
     @test part1(testarr) == 288
     @test part2(testarr) == 71503
+    for (t, d) in zip(testarr...)
+        @test race(t, d) == raceVersion1(t, d)
+    end
 end
 
 end
