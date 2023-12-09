@@ -2,8 +2,9 @@ module d09
 
 using Chain
 using InlineTest
+using Polynomials
 
-function predict(r)
+function predictVersion1(r)
     diffs = [r]
     while any(!=(0), diffs[end])
         push!(diffs, diff(diffs[end]))
@@ -15,7 +16,7 @@ function predict(r)
     return inc
 end
 
-function predictback(r)
+function predictbackVersion2(r)
     diffs = [r]
     while any(!=(0), diffs[end])
         push!(diffs, diff(diffs[end]))
@@ -27,16 +28,17 @@ function predictback(r)
     return inc
 end
 
+function predict(ys, x)
+    p = fit(eachindex(ys), ys)
+    return Int(round(p(x)))
+end
+
 function part1(d)
-    mapreduce(+, d) do row
-        predict(row)
-    end
+    mapreduce(ys -> predict(ys, length(ys) + 1), +, d)
 end
 
 function part2(d)
-    mapreduce(+, d) do row
-        predictback(row)
-    end
+    mapreduce(ys -> predict(ys, 0), +, d)
 end
 
 function parseinput(io)
