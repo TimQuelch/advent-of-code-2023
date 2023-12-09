@@ -4,37 +4,19 @@ using Chain
 using InlineTest
 
 function part1(d)
-    @show lookup = Dict(d[2])
+    lookup = Dict(d[2])
     curr = "AAA"
     n = 0
     for d in Iterators.cycle(d[1])
-        @show curr
         if curr == "ZZZ"
             return n
         end
         if d == 'L'
             n += 1
-            @show curr = lookup[curr][1]
+            curr = lookup[curr][1]
         else
             n += 1
-            @show curr = lookup[curr][2]
-        end
-    end
-end
-
-function part2(d)
-    lookup = Dict(d[2])
-    @show curr = collect(filter(s -> endswith(s, 'A'), keys(lookup)))
-    n = 0
-    for d in Iterators.cycle(d[1])
-        if all(s -> endswith(s, 'Z'), curr)
-            return n
-        end
-        i = d == 'L' ? 1 : 2
-        n += 1
-
-        for j in eachindex(curr)
-            curr[j] = lookup[curr[j]][i]
+            curr = lookup[curr][2]
         end
     end
 end
@@ -49,7 +31,7 @@ function cyclelength(start, dirs, lookup)
         n += 1
         curr = lookup[curr][i]
         if curr == start
-            @show curr, start
+            curr, start
         end
         if isnothing(firstz) && endswith(curr, 'Z')
             firstz = (curr, di, n)
@@ -58,30 +40,21 @@ function cyclelength(start, dirs, lookup)
         if !isnothing(firstz) && endswith(curr, 'Z')
             push!(zoffsets, n - firstz[3])
         end
-        # @show curr, start, di
         if !isnothing(firstz) && curr == firstz[1] && di == firstz[2]
             return (firstz, zoffsets, n)
         end
     end
 end
-function part2v2(d)
+function part2(d)
     lookup = Dict(d[2])
-    @show start = collect(filter(s -> endswith(s, 'A'), keys(lookup)))
-    @show curr = deepcopy(start)
-    @show cyclelengths = map(s -> cyclelength(s, d[1], lookup), start)
-    lcm(map(c -> c[1][3], cyclelengths)...)
-    # n = 0
-    # for (di, dir) in Iterators.cycle(enumerate(d[1]))
-    #     if all(s -> endswith(s, 'Z'), curr)
-    #         return n
-    #     end
-    #     i = d == 'L' ? 1 : 2
-    #     n += 1
+    start = collect(filter(s -> endswith(s, 'A'), keys(lookup)))
+    cyclelengths = map(s -> cyclelength(s, d[1], lookup), start)
 
-    #     for j in eachindex(curr)
-    #         curr[j] = lookup[curr[j]][i]
-    #     end
-    # end
+    # This input was in the simplest possible form. LCM like the following would fail if:
+    # - there was a prefix before the cycle was entered
+    # - any of the cycles passed through multiple Z nodes as part of the cycle
+    # These assumptions weren't stated as part of the problem statement though
+    lcm(map(c -> c[1][3], cyclelengths)...)
 end
 
 function parseinput(io)
