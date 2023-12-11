@@ -113,7 +113,7 @@ function doubleresolution(d)
     return reduce(hcat, map(c -> reduce(vcat, c), eachcol(expanded)))
 end
 
-function part2(d)
+function part2Version1(d)
     # Double the resolution of the grid. This ensures that there is a connected path when the loop doubles back on itself
     d = doubleresolution(d)
     g = buildgraph(d)
@@ -151,6 +151,33 @@ function part2(d)
         isreal = i -> cis[i][1] % 2 == 1 && cis[i][2] % 2 == 1
         return length(filter(isreal, component))
     end
+end
+
+function part2(d)
+    g = buildgraph(d)
+
+    # The loop is the connected component that has 'S' in it
+    components = connected_components(g)
+    start = findfirst(==('S'), d[:])
+    loopi = findfirst(c -> !isnothing(findfirst(==(start), c)), components)
+    loopindexes = components[loopi]
+
+    # Count how many north exiting there are left to right
+    li = LinearIndices(d)
+    count = 0
+    for (i, r) in enumerate(eachrow(d))
+        isinterior = false
+        for (j, x) in enumerate(r)
+            if li[i, j] in loopindexes
+                if x in ('|', 'L', 'J')
+                    isinterior = !isinterior
+                end
+            elseif isinterior
+                count += 1
+            end
+        end
+    end
+    return count
 end
 
 function parseinput(io)
