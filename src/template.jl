@@ -31,7 +31,6 @@ const testarr = [
     # @test parseinput(IOBuffer(teststr)) == testarr
     # @test part1(testarr) == nothing
     # @test part2(testarr) == nothing
-    # @test solve(IOBuffer(teststr)) == (nothing, nothing)
 end
 
 end
