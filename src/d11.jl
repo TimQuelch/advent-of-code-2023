@@ -5,22 +5,23 @@ using InlineTest
 
 function expand(d)
     expanded = deepcopy(d)
+    rowi, coli = Int[], Int[]
     for i in 1:size(d, 1)
         if all(==('.'), d[i, :])
-            expanded[i, :] .= 'x'
+            push!(rowi, i)
         end
     end
     for j in 1:size(d, 2)
         if all(==('.'), d[:, j])
-            expanded[:, j] .= 'x'
+            push!(coli, j)
         end
     end
-    return expanded
+    return (rowi, coli)
 end
 
 function distsum(d, expandfactor)
-    expanded = expand(d)
-    gs = findall(==('#'), expanded)
+    rowi, coli = expand(d)
+    gs = findall(==('#'), d)
     return mapreduce(+, enumerate(gs)) do ig
         i, g = ig
         return mapreduce(+, enumerate(gs)) do jo
@@ -28,12 +29,13 @@ function distsum(d, expandfactor)
             if i <= j
                 return 0
             end
-            dist = abs(g[1] - o[1]) + abs(g[2] - o[2])
+            r1, r2 = minmax(g[1], o[1])
+            c1, c2 = minmax(g[2], o[2])
 
-            rowi = map(i -> CartesianIndex(g[1], i), min(o[2], g[2]):max(o[2], g[2]))
-            coli = map(i -> CartesianIndex(i, g[2]), min(o[1], g[1]):max(o[1], g[1]))
-            xsrow = count(==('x'), expanded[rowi])
-            xscol = count(==('x'), expanded[coli])
+            dist = r2 - r1 + c2 - c1
+
+            xsrow = count(in(rowi), r1:r2)
+            xscol = count(in(coli), c1:c2)
             xs = xsrow + xscol
             return (dist - xs) + xs * expandfactor
         end
@@ -99,7 +101,7 @@ const testarr2 = [
 
 @testset "d11" begin
     @test parseinput(IOBuffer(teststr)) == testarr
-    @test expand(testarr) == testarr2
+    @test expand(testarr) == (Set([4, 8]), Set([3, 6, 9]))
     @test part1(testarr) == 374
     @test part2(testarr, 10) == 1030
     @test part2(testarr, 100) == 8410
