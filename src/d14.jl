@@ -16,7 +16,7 @@ function rollnorth(a)
                 if isnothing(newpos)
                     a[1, i] = 'O'
                 else
-                    a[length(j-1:-1:1) - newpos + 2, i] = 'O'
+                    a[length(j-1:-1:1)-newpos+2, i] = 'O'
                 end
             end
         end
@@ -55,17 +55,18 @@ function part2(d, n=1000000000)
     i = 1
     jumpedahead = false
     while i <= n
-        state = findall(==('O'), a)
 
-        if !jumpedahead && haskey(history, state)
-            oldi = history[state]
-            idiff = i - oldi
-            ncycles = div(n - i, idiff)
-            i = i + ncycles * idiff
-            jumpedahead = true
+        if !jumpedahead
+            state = findall(==('O'), a)
+            if haskey(history, state)
+                oldi = history[state]
+                idiff = i - oldi
+                ncycles = div(n - i, idiff)
+                i = i + ncycles * idiff
+                jumpedahead = true
+            end
+            history[state] = i
         end
-
-        history[state] = i
 
         for j in 1:4
             a = rollnorth(a)
