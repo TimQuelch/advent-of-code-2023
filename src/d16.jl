@@ -3,16 +3,24 @@ module d16
 using Chain
 using InlineTest
 using DataStructures
+using StaticArrays
+
+const dirlookup = Dict(
+    CartesianIndex(1, 0) => 1,
+    CartesianIndex(-1, 0) => 2,
+    CartesianIndex(0, 1) => 3,
+    CartesianIndex(0, -1) => 4,
+)
 
 # \
-backslashlookup = Dict(
+const backslashlookup = Dict(
     CartesianIndex(1, 0) => CartesianIndex(0, 1),
     CartesianIndex(-1, 0) => CartesianIndex(0, -1),
     CartesianIndex(0, 1) => CartesianIndex(1, 0),
     CartesianIndex(0, -1) => CartesianIndex(-1, 0),
 )
 # /
-forwardslashlookup = Dict(
+const forwardslashlookup = Dict(
     CartesianIndex(1, 0) => CartesianIndex(0, -1),
     CartesianIndex(-1, 0) => CartesianIndex(0, 1),
     CartesianIndex(0, 1) => CartesianIndex(-1, 0),
@@ -48,19 +56,19 @@ function tracebeam(d, pos, dir)
 end
 
 function runsim(d, initdir, initpos)
-    visited = [CartesianIndex{2}[] for i = 1:size(d, 1), j = 1:size(d, 2)]
+    visited = [MVector(false, false, false, false) for i = 1:size(d, 1), j = 1:size(d, 2)]
     stack = Stack{Tuple{CartesianIndex{2},CartesianIndex{2}}}()
     push!(stack, (initdir, initpos))
     while !isempty(stack)
         pos, dir = pop!(stack)
         if checkbounds(Bool, visited, pos)
-            push!(visited[pos], dir)
+            visited[pos][dirlookup[dir]] = true
         end
         newargs = tracebeam(d, pos, dir)
-        unvisited = filter(n -> !in(n[2], visited[n[1]]), newargs)
+        unvisited = filter(n -> !visited[n[1]][dirlookup[n[2]]], newargs)
         foreach(newarg -> push!(stack, newarg), unvisited)
     end
-    return count(!isempty, visited)
+    return count(any, visited)
 end
 
 function part1(d)
