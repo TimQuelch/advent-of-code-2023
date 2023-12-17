@@ -101,7 +101,7 @@ const testarr2 = [
 
 @testset "d11" begin
     @test parseinput(IOBuffer(teststr)) == testarr
-    @test expand(testarr) == (Set([4, 8]), Set([3, 6, 9]))
+    @test expand(testarr) == ([4, 8], [3, 6, 9])
     @test part1(testarr) == 374
     @test part2(testarr, 10) == 1030
     @test part2(testarr, 100) == 8410
