@@ -17,7 +17,7 @@ const hexdirlookup = Dict(
     '3' => 'U',
 )
 
-function part1(d)
+function holearea(d)
     path = [(0, 0)]
     for step in d[1:end-1]
         push!(path, path[end] .+ (step[2] .* dirlookup[step[1]]))
@@ -38,9 +38,13 @@ function part1(d)
     return interior_points + boundary_points
 end
 
+function part1(d)
+    return holearea(d)
+end
+
 function part2(d)
-    newinput = map(s -> (hexdirlookup[s[3][end]], parse(Int, s[3][2:end-1]; base=16), ""), d)
-    part1(newinput)
+    newinput = map(s -> (hexdirlookup[s[3][end]], parse(Int, s[3][2:end-1]; base=16)), d)
+    return holearea(newinput)
 end
 
 function parseinput(io)
