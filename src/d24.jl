@@ -4,7 +4,6 @@ using Chain
 using InlineTest
 using LinearAlgebra
 using StaticArrays
-using NonlinearSolve
 
 function part1(d, l=Int64(2e14), h=Int64(4e14))
     count(Iterators.product(enumerate(d), enumerate(d))) do ((i, (x1, v1)), (j, (x2, v2)))
